@@ -5,6 +5,7 @@ function LefitMoment(...arg) {
   this.timeData = {}
   this.now = new Date()
   this.formatTpl = this._formatTpl()
+  this.parseTpl = this._parseTpl()
   this.lang = lang
   this.langConfig = JSON.parse(JSON.stringify(langConfig))
   this.initTime(...arg)
@@ -30,6 +31,7 @@ LefitMoment.prototype = {
         this.forEachTime(time)
         break
       case 'string':
+      this.parseTime([].slice.call(arguments, 0))
         break  
       case 'object':
         if (time instanceof Date) {
@@ -42,7 +44,7 @@ LefitMoment.prototype = {
           let m = time.minutes || time.minute || time.m || 0
           let s = time.seconds || time.second || time.s || 0
           let ms = time.milliseconds || time.millisecond || time.ms || 0
-          this.initTime(new Date(y, --M, d, h, m, s, ms))
+          this.initTime(new Date(y, --M,M, d, h, m, s, ms))
         }
       break
     }
@@ -98,14 +100,34 @@ LefitMoment.prototype = {
       return output.replace(val.$key, val.replace)
     }, rule)
   },
-  _replace(str, key, replace) {
-    let regexp = new RegExp(key, 'g')
-    let result = str.match(regexp)
-    if (result && result.length === 1) {
-      // return str.replace(regexp, `[${replace}]`)
-      return {key, replace}
-    } else {
-      return {key}
+  parseTime(arg) {
+    let timeStr = arg[0]
+    let format = arg[1]
+    let temp = []
+    Object.keys(this.parseTpl).forEach((key, idx) => {
+      let regexp = new RegExp(key, 'g')
+      let result = format.match(regexp)
+      if (result && result.length === 1) {
+        format = format.replace(regexp, `$${temp.length}`)
+        temp.push({
+          $key: `$${temp.length}`,
+          replace: this.parseTpl[key].regexp,
+          str2val: this.parseTpl[key].str2val
+        })
+      }
+    })
+    let regexp = (temp.reduce((output, val) => {
+      return output.replace(val.$key, val.replace)
+    }, format))
+    console.log(regexp)
+    console.log(temp)
+    let result = timeStr.match(new RegExp(regexp))
+    if (result) {
+      let timeObj = result.slice(1).reduce((obj, key, idx) => {
+        return Object.assign(obj, temp[idx].str2val(key))
+      }, {})
+      console.log(timeObj)
+      console.log(this.initTime(timeObj).format('YYYY/MM/DD HH:mm'))
     }
   },
   _formatTpl() {
@@ -136,6 +158,42 @@ LefitMoment.prototype = {
       obj[key] = obj[key].bind(this, this.timeData)
     }
     return obj
+  },
+  _parseTpl () {
+    return {
+      YYYY: {
+        regexp: '(\\d{4})',
+        str2val: str => ({y: ~~str})
+      },
+      YY: {
+        regexp: '(\\d{2})',
+        str2val: str => ({y: 20 + ~~str})
+      },
+      MM: {
+        regexp: '(\\d{2})',
+        str2val: str => ({M: ~~str})
+      },
+      DD: {
+        regexp: '(\\d{2})',
+        str2val: str => ({d: ~~str})
+      },
+      HH: {
+        regexp: '(\\d{2})',
+        str2val: str => ({h: ~~str})
+      },
+      hh: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({h: ~~str})
+      },
+      mm: {
+        regexp: '(\\d{2})',
+        str2val: str => ({m: ~~str})
+      },
+      m: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({m: ~~str})
+      },
+    }
   }
 }
 var lang = 'zh'
