@@ -21,4 +21,13 @@ leMoment.locale('en') // 全局
 //   s: 30,
 //   ms: 500,
 // }).format('YYYY-Mo-DD HH:mm:ss dd'))
-leMoment('1997/12/03 16:23', 'YYYY/MM/DD HH:mm')
+let time = leMoment('2018/11/03 13:23')
+console.log(time.format('YYYY/MM/DD HH:mm'))
+time.set({
+  year: 2017,
+  month: 12,
+  day: 2,
+  hour: 11,
+  minute: 52
+})
+console.log(time.format('YYYY/MM/DD HH:mm dd'))

@@ -37,19 +37,35 @@ LefitMoment.prototype = {
         if (time instanceof Date) {
           this.forEachTime(time.getTime())
         } else {
-          let y = time.years || time.year || time.y || this.now.getFullYear()
-          let M = time.months || time.month || time.M || 1
-          let d = time.days || time.day || time.date || time.d || 1
-          let h = time.hours || time.hour || time.h || 0
-          let m = time.minutes || time.minute || time.m || 0
-          let s = time.seconds || time.second || time.s || 0
-          let ms = time.milliseconds || time.millisecond || time.ms || 0
-          this.initTime(new Date(y, --M,M, d, h, m, s, ms))
+          let obj = {
+            year: time.years || time.year || time.y || this.now.getFullYear(),
+            month: time.months || time.month || time.M || 1,
+            day: time.days || time.day || time.date || time.d || 1,
+            hour: time.hours || time.hour || time.h || 0,
+            minute: time.minutes || time.minute || time.m || 0,
+            second: time.seconds || time.second || time.s || 0,
+            millisecond:time.milliseconds || time.millisecond || time.ms || 0
+          }
+          obj = this.fixTimeVal(obj, true)
+          this.initTime(new Date(obj.year, obj.month, obj.day, obj.hour, obj.minute, obj.second, obj.millisecond))
         }
       break
     }
     this.formatTpl = this._formatTpl()
     return this
+  },
+  fixTimeVal(obj, isReal) { // 转换时间 主要为人们意识中的时间观念何真实Date存储值的转换
+    let week = undefined
+    if (isReal) {
+      week = obj.week === 7 ? 0 : obj.week
+    } else {
+      week = obj.week === 0 ? 7 : obj.week
+    }
+    return {
+      ...obj,
+      month: isReal ? obj.month - 1 : obj.month + 1,
+      week
+    }
   },
   locale(_lang, config) {
     if (this.langConfig.hasOwnProperty(_lang)) {
@@ -67,6 +83,35 @@ LefitMoment.prototype = {
   unix() {
     return this.timeData.unix
   },
+  get(key) {
+    if (this.timeDataHasKey(key)) {
+      return this.timeData[key]
+    } else {
+      throw Error('传入的参数有误, 不含该键值: ' + key)
+    }
+  },
+  timeDataHasKey(key) {
+    return ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond']
+    .some(v => v === key)
+  },
+  set(keyOrObj, val) {
+    let obj = this.fixTimeVal(this.timeData, false)
+    if (typeof keyOrObj === 'string') {
+      if (!val) {
+        throw Error(`请传入你想设置的${keyOrObj}值`)
+      }
+      if (this.timeDataHasKey(keyOrObj)) {
+        obj[keyOrObj] = val
+        this.initTime(obj)
+      } else {
+        throw Error('无法设置该值!请检查参数!')
+      }
+    } else if (typeof keyOrObj === 'object') {
+      for (let key in keyOrObj) {
+        this.set(key, keyOrObj[key])
+      }
+    }
+  },
   forEachTime(time) {
     let date = new Date(time)
     this.timeData = {
@@ -77,7 +122,7 @@ LefitMoment.prototype = {
       hour: date.getHours(),
       minute: date.getMinutes(),
       second: date.getSeconds(),
-      milliseconed: date.getMilliseconds(),
+      millisecond: date.getMilliseconds(),
       timestamp: time,
       unix: ~~(time / 1000)
     }
@@ -103,6 +148,17 @@ LefitMoment.prototype = {
   parseTime(arg) {
     let timeStr = arg[0]
     let format = arg[1]
+    if (!format) {
+      for (let i = 0; i < this.defaultParseRegexp.length; i++) {
+        if (timeStr.match(this.defaultParseRegexp[i].regexp)) {
+          format = this.defaultParseRegexp[i].tpl
+          break
+        }
+      }
+    }
+    if (!format) {
+      throw Error('无法识别 请传入需要解析的模板')
+    }
     let temp = []
     Object.keys(this.parseTpl).forEach((key, idx) => {
       let regexp = new RegExp(key, 'g')
@@ -119,15 +175,14 @@ LefitMoment.prototype = {
     let regexp = (temp.reduce((output, val) => {
       return output.replace(val.$key, val.replace)
     }, format))
-    console.log(regexp)
-    console.log(temp)
     let result = timeStr.match(new RegExp(regexp))
     if (result) {
       let timeObj = result.slice(1).reduce((obj, key, idx) => {
         return Object.assign(obj, temp[idx].str2val(key))
       }, {})
-      console.log(timeObj)
-      console.log(this.initTime(timeObj).format('YYYY/MM/DD HH:mm'))
+      this.initTime(timeObj)
+    } else {
+      throw Error('请传入正确的解析模版!')
     }
   },
   _formatTpl() {
@@ -167,7 +222,7 @@ LefitMoment.prototype = {
       },
       YY: {
         regexp: '(\\d{2})',
-        str2val: str => ({y: 20 + ~~str})
+        str2val: str => ({y: ~~(20 + str)})
       },
       MM: {
         regexp: '(\\d{2})',
@@ -181,7 +236,15 @@ LefitMoment.prototype = {
         regexp: '(\\d{2})',
         str2val: str => ({h: ~~str})
       },
+      H: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({h: ~~str})
+      },
       hh: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({h: ~~str})
+      },
+      h: {
         regexp: '(\\d{1,2})',
         str2val: str => ({h: ~~str})
       },
@@ -194,7 +257,14 @@ LefitMoment.prototype = {
         str2val: str => ({m: ~~str})
       },
     }
-  }
+  },
+  defaultParseRegexp: [{
+    tpl: 'YYYY/MM/DD HH:mm',
+    regexp: /(\d{4})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})/
+  }, {
+    tpl: 'YY/MM/DD HH:mm',
+    regexp: /(\d{2})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})/
+  }]
 }
 var lang = 'zh'
 var langConfig = {
