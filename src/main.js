@@ -1,27 +1,28 @@
 import leMoment from './moment'
-import Moment from './moment_'
-window.Moment = Moment
+// let leMoment = require('./moment')
 window.leMoment = leMoment
 
 // window.moment = new leMoment()
 
 leMoment.locale('en') // 全局
-// console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
-// console.log(leMoment().locale('zh').format('YYYY-MM-DD HH:mm:ss dd'))
-// console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
-// console.log(leMoment().format('YYYY-MMM-DD HH:mm:ss dd'))
-// console.log(leMoment().format('YYYY-MMMM-DD HH:mm:ss dd'))
-// console.log(leMoment().format('YYYY-Mo-DD HH:mm:ss dd'))
-// console.log(leMoment({
-//   // years: 2016,
-//   month: 1,
-//   d: 5,
-//   h:16,
-//   m: 16,
-//   s: 30,
-//   ms: 500,
-// }).format('YYYY-Mo-DD HH:mm:ss dd'))
-let time = leMoment('2018/11/03 13:23')
+leMoment()
+console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
+console.log(leMoment().locale('zh').format('YYYY-MM-DD HH:mm:ss dd'))
+console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
+console.log(leMoment().format('YYYY-MMM-DD HH:mm:ss dd'))
+console.log(leMoment().format('YYYY-MMMM-DD HH:mm:ss dd'))
+console.log(leMoment().format('YYYY-Mo-DD HH:mm:ss dd'))
+console.log(leMoment({
+  // years: 2016,
+  month: 1,
+  d: 5,
+  h:16,
+  m: 16,
+  s: 30,
+  ms: 500,
+}).format('YYYY-Mo-DD HH:mm:ss dd'))
+let time = leMoment.unix((new Date().getTime()) / 1000)
+// let time = leMoment('2018/11/03 13:23')
 console.log(time.format('YYYY/MM/DD HH:mm'))
 time.set({
   year: 2017,
