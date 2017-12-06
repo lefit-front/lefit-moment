@@ -5,7 +5,8 @@ window.leMoment = leMoment
 // window.moment = new leMoment()
 
 leMoment.locale('en') // 全局
-leMoment()
+console.log(leMoment('2017/12/10').get('day'))
+console.log(leMoment('2017/12/10').get('week'))
 console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
 console.log(leMoment().locale('zh').format('YYYY-MM-DD HH:mm:ss dd'))
 console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))

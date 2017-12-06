@@ -10,6 +10,7 @@
   const _parseTpl = Symbol('_parseTpl')
   const timeDataHasKey = Symbol('timeDataHasKey')
   const initTime = Symbol('initTime')
+  const parseTime = Symbol('parseTime')
 
   function LefitMoment(...arg) {
     if (!(this instanceof LefitMoment)){
@@ -53,7 +54,7 @@
         if (/^\d{10,}$/.test(time)) {
           this[initTime](Number(time))
         } else {
-          this.parseTime([].slice.call(arguments, 0))
+          this[parseTime]([].slice.call(arguments, 0))
         }
         break  
       case 'object':
@@ -94,8 +95,10 @@
     return this.timeData.unix
   }
   LefitMoment.prototype.get = function (key) {
-    if (this[timeDataHasKey](key)) {
-      return this.timeData[key]
+    let obj = this[fixTimeVal](this.timeData, false)
+    obj.week = obj.week === 7 ? 0 : obj.week
+    if (obj.hasOwnProperty(key)) {
+      return obj[key]
     } else {
       throw Error('传入的参数有误, 不含该键值: ' + key)
     }
@@ -135,7 +138,7 @@
       return output.replace(val.$key, val.replace)
     }, rule)
   }
-  LefitMoment.prototype.parseTime = function (arg) {
+  LefitMoment.prototype[parseTime] = function (arg) {
     let timeStr = arg[0]
     let format = arg[1]
     if (!format) {
