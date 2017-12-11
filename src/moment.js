@@ -186,11 +186,10 @@
     } else {
       week = obj.week === 0 ? 7 : obj.week
     }
-    return {
-      ...obj,
+    return Object.assign(obj, {
       month: isReal ? obj.month - 1 : obj.month + 1,
       week
-    }
+    })
   }
   LefitMoment.prototype[timeDataHasKey] = function (key) {
     return ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond']
