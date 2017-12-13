@@ -5,7 +5,10 @@ window.leMoment = leMoment
 // window.moment = new leMoment()
 
 leMoment.locale('en') // 全局
-console.log(leMoment('2017/12/10').get('month'))
+let time1 = leMoment('1994/10/10')
+console.log(time1.get('month'))
+console.log(time1.get('month'))
+console.log(time1.get('month'))
 console.log(leMoment('1994/10/10').get('year'))
 console.log(leMoment('2017/12/10').get('week'))
 console.log(leMoment({YYYY: 2008, MM: 3, DD: 1, HH: 15, mm: 30}).format('YYYY-MM-DD HH:mm'))

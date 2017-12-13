@@ -20,7 +20,7 @@
     this.now = new Date()
     this.parseTpl = this[_parseTpl]()
     this.lang = lang
-    this.langConfig = JSON.parse(JSON.stringify(langConfig))
+    this.langConfig = clone(langConfig)
     this[initTime](...arg)
   }
   
@@ -95,6 +95,7 @@
     return this.timeData.unix
   }
   LefitMoment.prototype.get = function (key) {
+    console.log('debugger', this.timeData)
     let obj = this[fixTimeVal](this.timeData, false)
     obj.week = obj.week === 7 ? 0 : obj.week
     if (obj.hasOwnProperty(key)) {
@@ -180,14 +181,15 @@
   }
   
   LefitMoment.prototype[fixTimeVal] = function (obj, isReal) { // 转换时间 主要为人们意识中的时间观念何真实Date存储值的转换
+    let _obj = clone(obj)
     let week = undefined
     if (isReal) {
-      week = obj.week === 7 ? 0 : obj.week
+      week = _obj.week === 7 ? 0 : _obj.week
     } else {
-      week = obj.week === 0 ? 7 : obj.week
+      week = _obj.week === 0 ? 7 : _obj.week
     }
-    return Object.assign(obj, {
-      month: isReal ? obj.month - 1 : obj.month + 1,
+    return Object.assign(_obj, {
+      month: isReal ? _obj.month - 1 : _obj.month + 1,
       week
     })
   }
@@ -284,6 +286,9 @@
       },
     }
   }
+  var clone = function (obj) {
+    return JSON.parse(JSON.stringify(obj))
+  }
   var defaultParseRegexp = [{
     tpl: 'YYYY/MM/DD HH:mm',
     regexp: /^(\d{4})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})$/
@@ -345,5 +350,6 @@
       ]
     }
   }
+
   return LefitMoment
 }))
