@@ -6,6 +6,7 @@ window.leMoment = leMoment
 
 leMoment.locale('en') // 全局
 console.log(leMoment('2017/12/10').get('month'))
+console.log(leMoment('1994/10/10').get('year'))
 console.log(leMoment('2017/12/10').get('week'))
 console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
 console.log(leMoment().locale('zh').format('YYYY-MM-DD HH:mm:ss dd'))

@@ -1,7 +1,7 @@
 {
   "name": "lefit-moment",
   "description": "乐刻时间格式化插件",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "cMing <mayday404@163.com>",
   "license": "MIT",
   "private": false,
