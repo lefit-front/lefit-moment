@@ -62,12 +62,12 @@
           this[forEachTime](time.getTime())
         } else {
           let obj = {
-            year: time.years || time.year || time.y || this.YYYY || this.now.getFullYear(),
-            month: time.months || time.month || time.M || this.MM || 1,
-            day: time.days || time.day || time.date || time.d || this.DD || this.D || 1,
-            hour: time.hours || time.hour || time.h || this.HH || 0,
-            minute: time.minutes || time.minute || time.m || this.mm || 0,
-            second: time.seconds || time.second || time.s || this.ss || 0,
+            year: time.years || time.year || time.y || time.YYYY || this.now.getFullYear(),
+            month: time.months || time.month || time.M || time.MM || 1,
+            day: time.days || time.day || time.date || time.d || time.DD || time.D || 1,
+            hour: time.hours || time.hour || time.h || time.HH || 0,
+            minute: time.minutes || time.minute || time.m || time.mm || 0,
+            second: time.seconds || time.second || time.s || time.ss || 0,
             millisecond:time.milliseconds || time.millisecond || time.ms || 0
           }
           obj = this[fixTimeVal](obj, true)
