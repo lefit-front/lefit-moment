@@ -153,6 +153,7 @@
     if (!format) {
       throw Error('无法识别 请传入需要解析的模板')
     }
+    console.log(format)
     let temp = []
     Object.keys(this.parseTpl).forEach((key, idx) => {
       let regexp = new RegExp(key, 'g')
@@ -169,6 +170,7 @@
     let regexp = (temp.reduce((output, val) => {
       return output.replace(val.$key, val.replace)
     }, format))
+    console.log(timeStr, regexp)
     let result = timeStr.match(new RegExp(regexp))
     if (result) {
       let timeObj = result.slice(1).reduce((obj, key, idx) => {
@@ -291,28 +293,28 @@
   }
   var defaultParseRegexp = [{
     tpl: 'YYYY/MM/DD HH:mm',
-    regexp: /^(\d{4})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})\/(\d{2})\/(\d{2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YYYY-MM-DD HH:mm',
-    regexp: /^(\d{4})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})-(\d{2})-(\d{2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YY/MM/DD HH:mm',
-    regexp: /^(\d{2})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})\/(\d{2})\/(\d{2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YY-MM-DD HH:mm',
-    regexp: /^(\d{2})[\/-](\d{2})[\/-](\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})-(\d{2})-(\d{2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YYYY/MM/DD',
-    regexp: /^(\d{4})[\/-](\d{2})[\/-](\d{2})$/
+    regexp: /^(\d{4})\/(\d{2})\/(\d{2})$/
   }, {
     tpl: 'YYYY-MM-DD',
-    regexp: /^(\d{4})[\/-](\d{2})[\/-](\d{2})$/
+    regexp: /^(\d{4})-(\d{2})-(\d{2})$/
   }, {
     tpl: 'YY/MM/DD',
-    regexp: /^(\d{2})[\/-](\d{2})[\/-](\d{2})$/
+    regexp: /^(\d{2})\/(\d{2})\/(\d{2})$/
   }, {
     tpl: 'YY-MM-DD',
-    regexp: /^(\d{2})[\/-](\d{2})[\/-](\d{2})$/
+    regexp: /^(\d{2})-(\d{2})-(\d{2})$/
   }]
   var lang = 'zh'
   var langConfig = {
