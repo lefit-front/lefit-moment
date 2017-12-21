@@ -39,8 +39,7 @@ time.set({
 })
 console.log(time.format('YYYY/MM/DD HH:mm dd'))
 console.log(leMoment().subtract(360, 'minute').format('YYYY-MM-DD HH:mm'))
-console.log(leMoment('2017/01/12').subtract({
-  month: 2,
-  day: 1,
-  hour: 1
-}).format('YYYY-MM-DD HH:mm'))
+console.log(leMoment('2017/12/24').subtract({
+  month: 1,
+  day: 1
+}).format('YYYY-MM-DD dd HH:mm'))

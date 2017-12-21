@@ -325,7 +325,8 @@
       + obj.millisecond * timestamps.millisecond
     this.timeData.year += obj.year
     this.timeData.month += obj.month
-    this[initTime](this.timeData)
+    let timeData = this[fixTimeVal](this.timeData, false)
+    this[initTime](timeData)
     this[initTime](this.valueOf() + timestamp)
     return this
   }
