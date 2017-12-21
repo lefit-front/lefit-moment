@@ -2,7 +2,7 @@ import leMoment from './moment'
 // let leMoment = require('./moment')
 window.leMoment = leMoment
 
-// window.moment = new leMoment()
+window.moment = new leMoment()
 
 leMoment.locale('en') // 全局
 let time1 = leMoment('1994/10/10')
@@ -38,3 +38,9 @@ time.set({
   minute: 52
 })
 console.log(time.format('YYYY/MM/DD HH:mm dd'))
+console.log(leMoment().subtract(360, 'minute').format('YYYY-MM-DD HH:mm'))
+console.log(leMoment('2017/01/12').subtract({
+  month: 2,
+  day: 1,
+  hour: 1
+}).format('YYYY-MM-DD HH:mm'))

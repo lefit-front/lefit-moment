@@ -1,7 +1,13 @@
-npm install lefit-moment -S
-
 #leMoment
 参照moment API 编写的时间库
+
+安装:
+```
+npm install lefit-moment -S
+
+import leMoment from 'lefit-moment'
+const leMoment = require('lefit-moment')
+```
 
 使用方法:
 ```
@@ -20,9 +26,9 @@ leMoment(Number|string|object, string)
 
 ##格式化时间
 ```
-moment.format('YYYY-MM-DD')
-moment.format('YYYY-MM-DD ddd')
-moment.format('YYYY-MM-DD HH:mm')
+leMoment.format('YYYY-MM-DD')
+leMoment.format('YYYY-MM-DD ddd')
+leMoment.format('YYYY-MM-DD HH:mm')
 ```
 |attr|token| out(en)|output(zh)|
 |--------|
@@ -103,23 +109,45 @@ leMoment().get(''millisecond) // 787
 ###set
 ```
 leMoment().set({
-    year: 2017,     // years, y
-    month: 12,      // months, M
-    day: 6,         // days, d
-    hour: 19,       // hours, h
-    minute: 20,     // minutes, m
-    second: 30,     // seconds, s 
+    year: 2017,     // years, y , YYYY
+    month: 12,      // months, M, MM
+    day: 6,         // days, d , DD
+    hour: 19,       // hours, h, HH
+    minute: 20,     // minutes, m, mm
+    second: 30,     // seconds, s, ss
     millisecond: 133 //millisecond, ms
 })
 ```
 
+###add
+```
+leMoment().add({
+    year: 1,     // years, y , YYYY
+    month: 2,      // months, M, MM
+    day: 3,         // days, d , DD
+    hour: 4,       // hours, h, HH
+    minute: 5,     // minutes, m, mm
+    second: 6,     // seconds, s, ss
+    millisecond: 7 //millisecond, ms
+})
+or
+leMoment().add(1, 'day')
+// 也可以传负数 效果等同于subtract
+```
 
-
-
-
-
-
-
-
-
+###subtract
+```
+leMoment().subtract({
+    year: 1,     // years, y , YYYY
+    month: 2,      // months, M, MM
+    day: 3,         // days, d , DD
+    hour: 4,       // hours, h, HH
+    minute: 5,     // minutes, m, mm
+    second: 6,     // seconds, s, ss
+    millisecond: 7 //millisecond, ms
+})
+or
+leMoment().subtract(1, 'day')
+// 也可以传负数 效果等同于add
+```
 

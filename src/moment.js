@@ -11,6 +11,7 @@
   const timeDataHasKey = Symbol('timeDataHasKey')
   const initTime = Symbol('initTime')
   const parseTime = Symbol('parseTime')
+  const takeHowLong = Symbol('takeHowLong')
 
   function LefitMoment(...arg) {
     if (!(this instanceof LefitMoment)){
@@ -95,9 +96,9 @@
     return this.timeData.unix
   }
   LefitMoment.prototype.get = function (key) {
-    console.log('debugger', this.timeData)
     let obj = this[fixTimeVal](this.timeData, false)
     obj.week = obj.week === 7 ? 0 : obj.week
+    obj.date = obj.day
     if (obj.hasOwnProperty(key)) {
       return obj[key]
     } else {
@@ -120,6 +121,27 @@
       for (let key in keyOrObj) {
         this.set(key, keyOrObj[key])
       }
+    }
+  }
+  LefitMoment.prototype.add = function (...arg) {
+    if (arg.length === 1 && typeof arg[0] === 'object') {
+      return this[takeHowLong](arg[0])
+    } else if (arg.length === 2) {
+      return this[takeHowLong]({[arg[1]]: arg[0]})
+    } else {
+      throw Error('请传入正确的参数! :add')
+    }
+  }
+  LefitMoment.prototype.subtract = function (...arg) {
+    if (arg.length === 1 && typeof arg[0] === 'object') {
+      for (let key in arg[0]) {
+        arg[0][key] = -arg[0][key]
+      }
+      return this[takeHowLong](arg[0])
+    } else if (arg.length === 2) {
+      return this[takeHowLong]({[arg[1]]: -arg[0]})
+    } else {
+      throw Error('请传入正确的参数! :subtract')
     }
   }
   LefitMoment.prototype.format = function (rule) {
@@ -153,7 +175,6 @@
     if (!format) {
       throw Error('无法识别 请传入需要解析的模板')
     }
-    console.log(format)
     let temp = []
     Object.keys(this.parseTpl).forEach((key, idx) => {
       let regexp = new RegExp(key, 'g')
@@ -170,7 +191,6 @@
     let regexp = (temp.reduce((output, val) => {
       return output.replace(val.$key, val.replace)
     }, format))
-    console.log(timeStr, regexp)
     let result = timeStr.match(new RegExp(regexp))
     if (result) {
       let timeObj = result.slice(1).reduce((obj, key, idx) => {
@@ -288,8 +308,36 @@
       },
     }
   }
+  LefitMoment.prototype[takeHowLong] = function (time) {
+    let obj = {
+      year: time.years || time.year || time.y || time.YYYY || 0,
+      month: time.months || time.month || time.M || time.MM || 0,
+      day: time.days || time.day || time.date || time.d || time.DD || time.D || 0,
+      hour: time.hours || time.hour || time.h || time.HH || 0,
+      minute: time.minutes || time.minute || time.m || time.mm || 0,
+      second: time.seconds || time.second || time.s || time.ss || 0,
+      millisecond:time.milliseconds || time.millisecond || time.ms || 0
+    }
+    let timestamp = obj.day * timestamps.day
+      + obj.hour * timestamps.hour
+      + obj.minute * timestamps.minute
+      + obj.second * timestamps.second
+      + obj.millisecond * timestamps.millisecond
+    this.timeData.year += obj.year
+    this.timeData.month += obj.month
+    this[initTime](this.timeData)
+    this[initTime](this.valueOf() + timestamp)
+    return this
+  }
   var clone = function (obj) {
     return JSON.parse(JSON.stringify(obj))
+  }
+  const timestamps = {
+    day: 86400000,
+    hour: 3600000,
+    minute: 60000,
+    second: 1000,
+    millisecond: 1
   }
   var defaultParseRegexp = [{
     tpl: 'YYYY/MM/DD HH:mm',
