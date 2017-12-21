@@ -54,6 +54,8 @@
       case 'string':
         if (/^\d{10,}$/.test(time)) {
           this[initTime](Number(time))
+        } else if (!time.trim()) {
+          this[forEachTime](new Date().getTime())
         } else {
           this[parseTime]([].slice.call(arguments, 0))
         }
@@ -61,6 +63,8 @@
       case 'object':
         if (time instanceof Date) {
           this[forEachTime](time.getTime())
+        } else if (time === null) {
+          this[forEachTime](new Date().getTime())
         } else {
           let obj = {
             year: time.years || time.year || time.y || time.YYYY || this.now.getFullYear(),

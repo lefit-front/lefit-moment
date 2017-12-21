@@ -43,3 +43,4 @@ console.log(leMoment('2017/12/24').subtract({
   month: 1,
   day: 1
 }).format('YYYY-MM-DD dd HH:mm'))
+console.log(leMoment(''))
