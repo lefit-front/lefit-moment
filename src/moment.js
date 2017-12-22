@@ -109,23 +109,28 @@
       throw Error('传入的参数有误, 不含该键值: ' + key)
     }
   }
-  LefitMoment.prototype.set = function (keyOrObj, val) {
+  LefitMoment.prototype.set = function (...arg) {
     let obj = this[fixTimeVal](this.timeData, false)
-    if (typeof keyOrObj === 'string') {
-      if (!val) {
-        throw Error(`请传入你想设置的${keyOrObj}值`)
-      }
-      if (this[timeDataHasKey](keyOrObj)) {
-        obj[keyOrObj] = val
-        this[initTime](obj)
-      } else {
-        throw Error('无法设置该值!请检查参数!')
-      }
-    } else if (typeof keyOrObj === 'object') {
-      for (let key in keyOrObj) {
-        this.set(key, keyOrObj[key])
+    let me = this
+    function analysis (keyOrObj, val) {
+      if (typeof keyOrObj === 'string') {
+        if (val === undefined || val === null) {
+          throw Error(`请传入你想设置的${keyOrObj}值`)
+        }
+        if (me[timeDataHasKey](keyOrObj)) {
+          obj[keyOrObj] = val
+          me[initTime](obj)
+        } else {
+          throw Error('无法设置该值!请检查参数!')
+        }
+      } else if (typeof keyOrObj === 'object') {
+        for (let key in keyOrObj) {
+          analysis(key, keyOrObj[key])
+        }
       }
     }
+    analysis(...arg)
+    return this
   }
   LefitMoment.prototype.add = function (...arg) {
     if (arg.length === 1 && typeof arg[0] === 'object') {
