@@ -7,8 +7,6 @@ window.moment = new leMoment()
 leMoment.locale('en') // 全局
 let time1 = leMoment('1994/10/10')
 console.log(time1.get('month'))
-console.log(time1.get('month'))
-console.log(time1.get('month'))
 console.log(leMoment('1994/10/10').get('year'))
 console.log(leMoment('2017/12/10').get('week'))
 console.log(leMoment({YYYY: 2008, MM: 3, DD: 1, HH: 15, mm: 30}).format('YYYY-MM-DD HH:mm'))
@@ -38,9 +36,9 @@ time.set({
   minute: 52
 })
 console.log(time.format('YYYY/MM/DD HH:mm dd'))
-console.log(leMoment().subtract(360, 'minute').format('YYYY-MM-DD HH:mm'))
+console.log(leMoment().add(360, 'minute').format('YYYY-MM-DD HH:mm'))
 console.log(leMoment('2017/12/24').subtract({
   month: 1,
   day: 1
 }).format('YYYY-MM-DD dd HH:mm'))
-console.log(leMoment(''))
+console.log(leMoment().format())

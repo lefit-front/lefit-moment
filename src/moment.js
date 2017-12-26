@@ -66,17 +66,15 @@
         } else if (time === null) {
           this[forEachTime](new Date().getTime())
         } else {
-          let obj = {
-            year: time.years || time.year || time.y || time.YYYY || this.now.getFullYear(),
-            month: time.months || time.month || time.M || time.MM || 1,
-            day: time.days || time.day || time.date || time.d || time.DD || time.D || 1,
-            hour: time.hours || time.hour || time.h || time.HH || 0,
-            minute: time.minutes || time.minute || time.m || time.mm || 0,
-            second: time.seconds || time.second || time.s || time.ss || 0,
-            millisecond:time.milliseconds || time.millisecond || time.ms || 0
-          }
-          obj = this[fixTimeVal](obj, true)
-          this[initTime](new Date(obj.year, obj.month, obj.day, obj.hour, obj.minute, obj.second, obj.millisecond))
+          let obj = transformVariable(time)
+          this[initTime](new Date(obj.year || this.now.getFullYear(),
+            obj.month || 1,
+            obj.day || 1,
+            obj.hour || 0,
+            obj.minute || 0,
+            obj.second || 0,
+            obj.millisecond || 0
+          ))
         }
       break
     }
@@ -100,8 +98,8 @@
     return this.timeData.unix
   }
   LefitMoment.prototype.get = function (key) {
-    let obj = this[fixTimeVal](this.timeData, false)
-    obj.week = obj.week === 7 ? 0 : obj.week
+    let obj = clone(this.timeData)
+    obj.weekday = obj.week
     obj.date = obj.day
     if (obj.hasOwnProperty(key)) {
       return obj[key]
@@ -110,7 +108,7 @@
     }
   }
   LefitMoment.prototype.set = function (...arg) {
-    let obj = this[fixTimeVal](this.timeData, false)
+    let obj = clone(this.timeData)
     let me = this
     function analysis (keyOrObj, val) {
       if (typeof keyOrObj === 'string') {
@@ -153,7 +151,11 @@
       throw Error('请传入正确的参数! :subtract')
     }
   }
-  LefitMoment.prototype.format = function (rule) {
+  LefitMoment.prototype.format = function (_rule) {
+    let rule = _rule
+    if (_rule === undefined) {
+      rule = 'YYYY-MM-DDTHH:mm:ss'
+    }
     let temp = []
     Object.keys(this.formatTpl).forEach((key, idx) => {
       let regexp = new RegExp(key, 'g')
@@ -166,9 +168,14 @@
         })
       }
     })
-    return temp.reduce((output, val) => {
+    let out = temp.reduce((output, val) => {
       return output.replace(val.$key, val.replace)
     }, rule)
+    if (_rule === undefined) {
+      return out + formatTimezoneHour(this.now.getTimezoneOffset())
+    } else {
+      return out
+    }
   }
   LefitMoment.prototype[parseTime] = function (arg) {
     let timeStr = arg[0]
@@ -205,6 +212,8 @@
       let timeObj = result.slice(1).reduce((obj, key, idx) => {
         return Object.assign(obj, temp[idx].str2val(key))
       }, {})
+      timeObj = transformVariable(timeObj)
+      timeObj = this[fixTimeVal](timeObj, true)
       this[initTime](timeObj)
     } else {
       throw Error('请传入正确的解析模版!')
@@ -318,29 +327,40 @@
     }
   }
   LefitMoment.prototype[takeHowLong] = function (time) {
-    let obj = {
-      year: time.years || time.year || time.y || time.YYYY || 0,
-      month: time.months || time.month || time.M || time.MM || 0,
-      day: time.days || time.day || time.date || time.d || time.DD || time.D || 0,
-      hour: time.hours || time.hour || time.h || time.HH || 0,
-      minute: time.minutes || time.minute || time.m || time.mm || 0,
-      second: time.seconds || time.second || time.s || time.ss || 0,
-      millisecond:time.milliseconds || time.millisecond || time.ms || 0
-    }
-    let timestamp = obj.day * timestamps.day
-      + obj.hour * timestamps.hour
-      + obj.minute * timestamps.minute
-      + obj.second * timestamps.second
-      + obj.millisecond * timestamps.millisecond
-    this.timeData.year += obj.year
-    this.timeData.month += obj.month
-    let timeData = this[fixTimeVal](this.timeData, false)
-    this[initTime](timeData)
+    let obj = transformVariable(time)
+    let timestamp = (obj.day || 0) * timestamps.day
+      + (obj.hour || 0) * timestamps.hour
+      + (obj.minute || 0) * timestamps.minute
+      + (obj.second || 0) * timestamps.second
+      + (obj.millisecond || 0) * timestamps.millisecond
+    this.timeData.year += obj.year || 0
+    this.timeData.month += obj.month || 0
+    this[initTime](this.timeData)
     this[initTime](this.valueOf() + timestamp)
     return this
   }
   var clone = function (obj) {
     return JSON.parse(JSON.stringify(obj))
+  }
+  // 转换变量名
+  var transformVariable = function (time) {
+    return {
+      year: time.years || time.year || time.y || time.YYYY || undefined,
+      month: time.months || time.month || time.M || time.MM || undefined,
+      day: time.days || time.day || time.date || time.d || time.DD || time.D || undefined,
+      hour: time.hours || time.hour || time.h || time.HH || undefined,
+      minute: time.minutes || time.minute || time.m || time.mm || undefined,
+      second: time.seconds || time.second || time.s || time.ss || undefined,
+      millisecond:time.milliseconds || time.millisecond || time.ms || undefined
+    }
+  }
+  var getTimezoneHour = function (time) {
+    return -time / 60
+  }
+  var formatTimezoneHour = function (time) {
+    let h = getTimezoneHour(time)
+    let _h = Math.abs(h)
+    return `${h > -1 ? '+' : '-'}${_h < 10 ? '0' + _h : _h}:00`
   }
   const timestamps = {
     day: 86400000,
