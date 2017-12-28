@@ -67,7 +67,7 @@
         } else {
           let obj = transformVariable(time)
           this[initTime](new Date(obj.year || this.now.getFullYear(),
-            obj.month || 1,
+            obj.month || 0,
             obj.date || 1,
             obj.hour || 0,
             obj.minute || 0,
@@ -98,7 +98,7 @@
   }
   LefitMoment.prototype.get = function (key) {
     let timeData = clone(this.timeData)
-    timeData.week = getYearWeek(this.timeData.year, this.timeData.month + 1, this.timeData.date)
+    timeData.week = getYearWeek(this.timeData.year, this.timeData.month, this.timeData.date)
     if (timeData.hasOwnProperty(key)) {
       return timeData[key]
     } else {
@@ -292,11 +292,11 @@
         str2val: str => ({y: ~~(20 + str)})
       },
       MM: {
-        regexp: '(\\d{2})',
+        regexp: '(\\d{1,2})',
         str2val: str => ({M: ~~str})
       },
       DD: {
-        regexp: '(\\d{2})',
+        regexp: '(\\d{1,2})',
         str2val: str => ({d: ~~str})
       },
       HH: {
@@ -323,17 +323,23 @@
         regexp: '(\\d{1,2})',
         str2val: str => ({m: ~~str})
       },
+      ss: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({s: ~~str})
+      },
+      s: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({s: ~~str})
+      }
     }
   }
   LefitMoment.prototype[takeHowLong] = function (time) {
     let obj = transformVariable(time)
-    console.log(obj)
     let timestamp = (obj.date || 0) * timestamps.date
       + (obj.hour || 0) * timestamps.hour
       + (obj.minute || 0) * timestamps.minute
       + (obj.second || 0) * timestamps.second
       + (obj.millisecond || 0) * timestamps.millisecond
-    console.log(timestamp)
     this.timeData.year += obj.year || 0
     this.timeData.month += obj.month || 0
     this[initTime](this.timeData)
@@ -346,7 +352,6 @@
   // 转换变量名
   var transformVariable = function (time) {
     return {
-      ...time,
       year: time.years || time.year || time.y || time.YYYY || undefined,
       month: time.months || time.month || time.M || time.MM || undefined,
       date: time.date || time.d || time.DD || time.D || undefined,
@@ -365,58 +370,58 @@
     return `${h > -1 ? '+' : '-'}${_h < 10 ? '0' + _h : _h}:00`
 }
     
-  var getMonthWeek = function (a, b, c) { 
-    /* 
-    a = d = 当前日期 
-    b = 6 - w = 当前周的还有几天过完（不算今天） 
-    a + b 的和在除以7 就是当天是当前月份的第几周 
-    */ 
-    var date = new Date(a, parseInt(b) - 1, c), w = date.getDay(), d = date.getDate()
-      return Math.ceil((d + 6 - w) / 7)
-    }
+  // var getMonthWeek = function (a, b, c) { 
+  //   /* 
+  //   a = d = 当前日期 
+  //   b = 6 - w = 当前周的还有几天过完（不算今天） 
+  //   a + b 的和在除以7 就是当天是当前月份的第几周 
+  //   */ 
+  //   var date = new Date(a, parseInt(b) - 1, c), w = date.getDay(), d = date.getDate()
+  //     return Math.ceil((d + 6 - w) / 7)
+  //   }
     
-  var getYearWeek = function (a, b, c) { 
-    /* 
-    date1是当前日期 
-    date2是当年第一天 
-    d是当前日期是今年第多少天 
-    用d + 当前年的第一天的周差距的和在除以7就是本年第几周 
-    */ 
-    var date1 = new Date(a, parseInt(b) - 1, c), date2 = new Date(a, 0, 1),
-            d = Math.round((date1.valueOf() - date2.valueOf()) / 86400000)
-      return Math.ceil((d + ((date2.getDay() + 1) - 1)) / 7)
-    }
+  var getYearWeek = function (year, month, date) {
+    // 先找到要计算的周的周六是哪天 再找到要计算的1/1的周日是哪天 再计算时差
+    let date1 = new Date(year, month, date)
+    let date2 = new Date(year, 0, 1)
+    let date1Week = date1.getDay()
+    date1 = date1.valueOf() - date1Week * timestamps.date
+    let date2Week = date2.getDay()
+    date2 = date2.valueOf() - date2Week * timestamps.date
+    return Math.ceil((date1.valueOf() - date2.valueOf()) / timestamps.week) + 1
+  }
   const timestamps = {
     date: 86400000,
     hour: 3600000,
     minute: 60000,
     second: 1000,
-    millisecond: 1
+    millisecond: 1,
+    week: 604800000
   }
   var defaultParseRegexp = [{
     tpl: 'YYYY/MM/DD HH:mm',
-    regexp: /^(\d{4})\/(\d{2})\/(\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YYYY-MM-DD HH:mm',
-    regexp: /^(\d{4})-(\d{2})-(\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})-(\d{1,2})-(\d{1,2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YY/MM/DD HH:mm',
-    regexp: /^(\d{2})\/(\d{2})\/(\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})\/(\d{1,2})\/(\d{1,2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YY-MM-DD HH:mm',
-    regexp: /^(\d{2})-(\d{2})-(\d{2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})-(\d{1,2})-(\d{1,2})\s?(\d{2}):(\d{2})$/
   }, {
     tpl: 'YYYY/MM/DD',
-    regexp: /^(\d{4})\/(\d{2})\/(\d{2})$/
+    regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/
   }, {
     tpl: 'YYYY-MM-DD',
-    regexp: /^(\d{4})-(\d{2})-(\d{2})$/
+    regexp: /^(\d{4})-(\d{1,2})-(\d{1,2})$/
   }, {
     tpl: 'YY/MM/DD',
-    regexp: /^(\d{2})\/(\d{2})\/(\d{2})$/
+    regexp: /^(\d{2})\/(\d{1,2})\/(\d{1,2})$/
   }, {
     tpl: 'YY-MM-DD',
-    regexp: /^(\d{2})-(\d{2})-(\d{2})$/
+    regexp: /^(\d{2})-(\d{1,2})-(\d{1,2})$/
   }]
   var lang = 'zh'
   var langConfig = {
