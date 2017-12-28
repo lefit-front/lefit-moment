@@ -12,7 +12,6 @@
   const initTime = Symbol('initTime')
   const parseTime = Symbol('parseTime')
   const takeHowLong = Symbol('takeHowLong')
-
   function LefitMoment(...arg) {
     if (!(this instanceof LefitMoment)){
       return new LefitMoment(...arg)
@@ -69,7 +68,7 @@
           let obj = transformVariable(time)
           this[initTime](new Date(obj.year || this.now.getFullYear(),
             obj.month || 1,
-            obj.day || 1,
+            obj.date || 1,
             obj.hour || 0,
             obj.minute || 0,
             obj.second || 0,
@@ -98,11 +97,10 @@
     return this.timeData.unix
   }
   LefitMoment.prototype.get = function (key) {
-    let obj = clone(this.timeData)
-    obj.weekday = obj.week
-    obj.date = obj.day
-    if (obj.hasOwnProperty(key)) {
-      return obj[key]
+    let timeData = clone(this.timeData)
+    timeData.week = getYearWeek(this.timeData.year, this.timeData.month + 1, this.timeData.date)
+    if (timeData.hasOwnProperty(key)) {
+      return timeData[key]
     } else {
       throw Error('传入的参数有误, 不含该键值: ' + key)
     }
@@ -222,15 +220,15 @@
   
   LefitMoment.prototype[fixTimeVal] = function (obj, isReal) { // 转换时间 主要为人们意识中的时间观念何真实Date存储值的转换
     let _obj = clone(obj)
-    let week = undefined
+    let day = undefined
     if (isReal) {
-      week = _obj.week === 7 ? 0 : _obj.week
+      day = _obj.day === 7 ? 0 : _obj.day
     } else {
-      week = _obj.week === 0 ? 7 : _obj.week
+      day = _obj.day === 0 ? 7 : _obj.day
     }
     return Object.assign(_obj, {
       month: isReal ? _obj.month - 1 : _obj.month + 1,
-      week
+      day
     })
   }
   LefitMoment.prototype[timeDataHasKey] = function (key) {
@@ -242,8 +240,9 @@
     this.timeData = {
       year: date.getFullYear(),
       month: date.getMonth(),
-      day: date.getDate(),
-      week: date.getDay(),
+      date: date.getDate(),
+      weekday: date.getDay(),
+      day: date.getDay(),
       hour: date.getHours(),
       minute: date.getMinutes(),
       second: date.getSeconds(),
@@ -258,8 +257,8 @@
     let obj = {
       YYYY: date => date.year.toString(),
       YY: date => date.year.toString().slice(-2),
-      DD: date => date.day < 10 ? '0' + date.day : date.day + '',
-      D: date => date.day.toString(),
+      DD: date => date.date < 10 ? '0' + date.date : date.date + '',
+      D: date => date.date.toString(),
       hh: date => date._hour < 10 ? '0' + date._hour : date._hour + '',
       h: date => date._hour.toString(),
       HH: date => date.hour < 10 ? '0' + date.hour : date.hour + '',
@@ -268,14 +267,14 @@
       MMM: date => this.langConfig[this.lang].monthsShort[date.month],
       MM: date => date.month + 1 < 10 ? `0${date.month + 1}` : `${date.month + 1}`,
       Mo: date => this.langConfig[this.lang].monthsMin[date.month],
-      M: date => date.month.toString(),
+      M: date => (date.month + 1).toString(),
       mm: date => date.minute < 10 ? '0' + date.minute : date.minute + '',
       m: date => date.minute.toString(),
       ss: date => date.second < 10 ? '0' + date.second : date.second + '',
       s: date => date.second.toString(),
-      ddd: date => this.langConfig[this.lang].weekdays[date.week],
-      dd: date => this.langConfig[this.lang].weekdaysShort[date.week],
-      d: date => this.langConfig[this.lang].weekdaysMin[date.week],
+      ddd: date => this.langConfig[this.lang].weekdays[date.day],
+      dd: date => this.langConfig[this.lang].weekdaysShort[date.day],
+      d: date => this.langConfig[this.lang].weekdaysMin[date.day],
     }
     for (let key in obj) {
       obj[key] = obj[key].bind(this, this.timeData)
@@ -328,11 +327,13 @@
   }
   LefitMoment.prototype[takeHowLong] = function (time) {
     let obj = transformVariable(time)
-    let timestamp = (obj.day || 0) * timestamps.day
+    console.log(obj)
+    let timestamp = (obj.date || 0) * timestamps.date
       + (obj.hour || 0) * timestamps.hour
       + (obj.minute || 0) * timestamps.minute
       + (obj.second || 0) * timestamps.second
       + (obj.millisecond || 0) * timestamps.millisecond
+    console.log(timestamp)
     this.timeData.year += obj.year || 0
     this.timeData.month += obj.month || 0
     this[initTime](this.timeData)
@@ -345,9 +346,10 @@
   // 转换变量名
   var transformVariable = function (time) {
     return {
+      ...time,
       year: time.years || time.year || time.y || time.YYYY || undefined,
       month: time.months || time.month || time.M || time.MM || undefined,
-      day: time.days || time.day || time.date || time.d || time.DD || time.D || undefined,
+      date: time.date || time.d || time.DD || time.D || undefined,
       hour: time.hours || time.hour || time.h || time.HH || undefined,
       minute: time.minutes || time.minute || time.m || time.mm || undefined,
       second: time.seconds || time.second || time.s || time.ss || undefined,
@@ -361,9 +363,31 @@
     let h = getTimezoneHour(time)
     let _h = Math.abs(h)
     return `${h > -1 ? '+' : '-'}${_h < 10 ? '0' + _h : _h}:00`
-  }
+}
+    
+  var getMonthWeek = function (a, b, c) { 
+    /* 
+    a = d = 当前日期 
+    b = 6 - w = 当前周的还有几天过完（不算今天） 
+    a + b 的和在除以7 就是当天是当前月份的第几周 
+    */ 
+    var date = new Date(a, parseInt(b) - 1, c), w = date.getDay(), d = date.getDate()
+      return Math.ceil((d + 6 - w) / 7)
+    }
+    
+  var getYearWeek = function (a, b, c) { 
+    /* 
+    date1是当前日期 
+    date2是当年第一天 
+    d是当前日期是今年第多少天 
+    用d + 当前年的第一天的周差距的和在除以7就是本年第几周 
+    */ 
+    var date1 = new Date(a, parseInt(b) - 1, c), date2 = new Date(a, 0, 1),
+            d = Math.round((date1.valueOf() - date2.valueOf()) / 86400000)
+      return Math.ceil((d + ((date2.getDay() + 1) - 1)) / 7)
+    }
   const timestamps = {
-    day: 86400000,
+    date: 86400000,
     hour: 3600000,
     minute: 60000,
     second: 1000,
@@ -430,6 +454,5 @@
       ]
     }
   }
-
   return LefitMoment
 }))

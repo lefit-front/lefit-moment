@@ -1,14 +1,16 @@
 import leMoment from './moment'
 // let leMoment = require('./moment')
 window.leMoment = leMoment
-
-window.moment = new leMoment()
+import moment from 'moment'
+window.moment = moment
 
 leMoment.locale('en') // 全局
 let time1 = leMoment('1994/10/10')
 console.log(time1.get('month'))
 console.log(leMoment('1994/10/10').get('year'))
-console.log(leMoment('2017/12/10').get('week'))
+console.log(leMoment('2017/12/10').get('day'))
+console.log(leMoment('2017/12/10').get('weekday'))
+console.log(leMoment('2017/12/28').get('week'))
 console.log(leMoment({YYYY: 2008, MM: 3, DD: 1, HH: 15, mm: 30}).format('YYYY-MM-DD HH:mm'))
 console.log(leMoment().format('YYYY-MM-DD HH:mm:ss dd'))
 console.log(leMoment().locale('zh').format('YYYY-MM-DD HH:mm:ss dd'))
