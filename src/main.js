@@ -6,6 +6,11 @@ window.moment = moment
 
 leMoment.locale('en') // 全局
 let time1 = leMoment('1994/10/10')
+let time2 = leMoment({ year: 2017, month: 10, date: 31 })
+// let time2 = leMoment('2017/11/31')
+console.log(time2)
+console.log(time2.get('month'))
+console.log(time2.get('year'))
 console.log(time1.get('month'))
 console.log(leMoment('1994/10/10').get('year'))
 console.log(leMoment('2017/12/10').get('day'))
@@ -43,4 +48,4 @@ console.log(leMoment('2017/12/24').subtract({
   month: 1,
   day: 1
 }).format('YYYY-MM-DD dd HH:mm'))
-console.log(leMoment().format())
+console.log(leMoment('2018/01/01 5:6').format('YYYY/MM/DD HH:mm'))

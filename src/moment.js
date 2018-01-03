@@ -117,7 +117,7 @@
           obj[keyOrObj] = val
           me[initTime](obj)
         } else {
-          throw Error('无法设置该值!请检查参数!')
+          throw Error('无法设置该值!请检查参数! :' + keyOrObj)
         }
       } else if (typeof keyOrObj === 'object') {
         for (let key in keyOrObj) {
@@ -232,7 +232,7 @@
     })
   }
   LefitMoment.prototype[timeDataHasKey] = function (key) {
-    return ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond']
+    return ['year', 'month', 'day', 'date', 'hour', 'minute', 'second', 'millisecond']
     .some(v => v === key)
   }
   LefitMoment.prototype[forEachTime] = function (time) {
@@ -295,12 +295,20 @@
         regexp: '(\\d{1,2})',
         str2val: str => ({M: ~~str})
       },
+      M: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({M: ~~str})
+      },
       DD: {
         regexp: '(\\d{1,2})',
         str2val: str => ({d: ~~str})
       },
+      D: {
+        regexp: '(\\d{1,2})',
+        str2val: str => ({d: ~~str})
+      },
       HH: {
-        regexp: '(\\d{2})',
+        regexp: '(\\d{1,2})',
         str2val: str => ({h: ~~str})
       },
       H: {
@@ -316,7 +324,7 @@
         str2val: str => ({h: ~~str})
       },
       mm: {
-        regexp: '(\\d{2})',
+        regexp: '(\\d{1,2})',
         str2val: str => ({m: ~~str})
       },
       m: {
@@ -400,16 +408,28 @@
   }
   var defaultParseRegexp = [{
     tpl: 'YYYY/MM/DD HH:mm',
-    regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})\s?(\d{1,2}):(\d{1,2})$/
   }, {
     tpl: 'YYYY-MM-DD HH:mm',
-    regexp: /^(\d{4})-(\d{1,2})-(\d{1,2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{4})-(\d{1,2})-(\d{1,2})\s?(\d{1,2}):(\d{1,2})$/
   }, {
     tpl: 'YY/MM/DD HH:mm',
-    regexp: /^(\d{2})\/(\d{1,2})\/(\d{1,2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})\/(\d{1,2})\/(\d{1,2})\s?(\d{1,2}):(\d{1,2})$/
   }, {
     tpl: 'YY-MM-DD HH:mm',
-    regexp: /^(\d{2})-(\d{1,2})-(\d{1,2})\s?(\d{2}):(\d{2})$/
+    regexp: /^(\d{2})-(\d{1,2})-(\d{1,2})\s?(\d{1,2}):(\d{1,2})$/
+  },{
+    tpl: 'YYYY/MM/DD HH:mm:ss',
+    regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})\s?(\d{1,2}):(\d{1,2}):(\d{1,2})$/
+  }, {
+    tpl: 'YYYY-MM-DD HH:mm:ss',
+    regexp: /^(\d{4})-(\d{1,2})-(\d{1,2})\s?(\d{1,2}):(\d{1,2}):(\d{1,2})$/
+  }, {
+    tpl: 'YY/MM/DD HH:mm:ss',
+    regexp: /^(\d{2})\/(\d{1,2})\/(\d{1,2})\s?(\d{1,2}):(\d{1,2}):(\d{1,2})$/
+  }, {
+    tpl: 'YY-MM-DD HH:mm:ss',
+    regexp: /^(\d{2})-(\d{1,2})-(\d{1,2})\s?(\d{1,2}):(\d{1,2}):(\d{1,2})$/
   }, {
     tpl: 'YYYY/MM/DD',
     regexp: /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/

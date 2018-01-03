@@ -97,9 +97,11 @@ leMoment().valueOf()
 ###get
 ```
 leMoment().get('year') // 2017
-leMoment().get('month') // 12      1,2...11,12
-leMoment().get('day') // 6         1,2,.30,31
-leMoment().get('week') // 3        0,1,,...5,6
+leMoment().get('month') // 12      0,1,2...10,11
+leMoment().get('date') // 6         1,2,.30,31
+leMoment('2017/12/28').get('week') // 52        0,1,,...51,52
+leMoment('2019/1/3').get('day') // 3     0,1,..6,7
+leMoment('2019/1/3').get('weekdays') // 3     0,1,..6,7
 leMoment().get('hour') // 19
 leMoment().get('minute') // 36
 leMoment().get('second') // 15
@@ -110,7 +112,7 @@ leMoment().get(''millisecond) // 787
 ```
 leMoment().set({
     year: 2017,     // years, y , YYYY
-    month: 12,      // months, M, MM
+    month: 11,      // months, M, MM
     day: 6,         // days, d , DD
     hour: 19,       // hours, h, HH
     minute: 20,     // minutes, m, mm
