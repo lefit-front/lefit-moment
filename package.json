@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha",
     "dev": "parcel index.html -p 8023",
-    "build": "parcel "
+    "build": "parcel build ./src/moment.js -d build -o moment.min.js"
   },
   "repository": {
     "type": "git",
