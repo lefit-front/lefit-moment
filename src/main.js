@@ -1,8 +1,7 @@
 import leMoment from './moment'
+console.log(leMoment)
 // let leMoment = require('./moment')
 window.leMoment = leMoment
-import moment from 'moment'
-window.moment = moment
 
 leMoment.locale('en') // 全局
 let time1 = leMoment('1994/10/10')
