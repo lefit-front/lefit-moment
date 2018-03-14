@@ -9,7 +9,8 @@
   "scripts": {
     "test": "mocha",
     "dev": "parcel index.html -p 8023",
-    "build": "parcel build ./src/moment.js -d build -o moment.min.js"
+    "build": "parcel build ./src/moment.js -d build -o moment.min.js",
+    "publish": "npm run build && npm publish lefit-moment"
   },
   "repository": {
     "type": "git",
