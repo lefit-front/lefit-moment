@@ -1,6 +1,6 @@
 {
   "name": "lefit-moment",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "参照moment API 编写的时间库",
   "main": "./src/moment.js",
   "directories": {
@@ -10,7 +10,7 @@
     "test": "mocha",
     "dev": "parcel index.html -p 8023",
     "build": "parcel build ./src/moment.js -d build -o moment.min.js",
-    "publish": "npm run build && npm publish lefit-moment"
+    "deploy": "npm run build && npm publish lefit-moment"
   },
   "repository": {
     "type": "git",
