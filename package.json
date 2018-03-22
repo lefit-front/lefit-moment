@@ -1,8 +1,8 @@
 {
   "name": "lefit-moment",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "参照moment API 编写的时间库",
-  "main": "./dist/lefit-moment.min.js",
+  "main": "./src/moment.js",
   "directories": {
     "test": "test"
   },
