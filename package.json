@@ -1,6 +1,6 @@
 {
   "name": "lefit-moment",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "参照moment API 编写的时间库",
   "main": "./src/moment.js",
   "directories": {
@@ -10,7 +10,8 @@
     "test": "mocha",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "deploy": "npm run build && npm publish lefit-moment"
+    "deploy": "npm run package && npm publish lefit-moment",
+    "package": "rollup -c "
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,9 @@
     "babel-preset-stage-3": "^6.24.1",
     "cross-env": "^5.0.5",
     "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.9.1"
+    "webpack-dev-server": "^2.9.1",
+    "rollup": "^0.59.4",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-commonjs": "^9.1.3"
   }
 }
